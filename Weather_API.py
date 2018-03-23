@@ -1,11 +1,6 @@
 # Weather API for automated irrigation system for Assignment 1
 # Chad Finch - 16151947
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 # Rob Harper - 96066910
-=======
-
 # Glenn Roslee - 11062008
 
 import RPi.GPIO as GPIO
