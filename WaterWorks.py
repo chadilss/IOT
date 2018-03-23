@@ -12,27 +12,28 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
 moistSensor = 21
-water = false
-noWater = false
+water = False
+noWater = False
 
-#This is just for testing purposes
+#This is just for testing purposes | Output
 GPIO.setup(18, GPIO.OUT)
 GPIO.setup(23, GPIO.OUT)
 GPIO.setup(24, GPIO.OUT)
 GPIO.setup(25, GPIO.OUT)
 
+# INPUT
+GPIO.setup(moistSensor, GPIO.IN)
 
 
 def checkMoisture(moistSensor):
 	if GPIO.input(moistSensor):
-		noWater = true;
+		noWater = True;
 	else:
-		water = true;
+		water = True;
 		
 
-GPIO.add_event_detect(moiseSensor, GPIO.BOTH, bouncetime=300)
-GPIO.add_event_checkMoisture(moistSensor, checkMoisture)
-
+GPIO.add_event_detect(moistSensor, GPIO.BOTH, bouncetime=300)
+GPIO.add_event_callback(moistSensor, checkMoisture)		
 		
 def receiveTemp():
     "get temperature from weather api"
@@ -79,7 +80,7 @@ print (currentforecast)
 # This will output to the LEDS for testing - this will change once the moisture sensor and relay are in place
 # which then output to the solenoid for water release.
 # we will need to add in a timer which will close the solenoid when the timer expires.
-if noWater == true:
+if noWater == True:
 	if currentforecast == 'Clear':
 		print ('Start Water Flow')
 		#tested with an LED
@@ -89,14 +90,24 @@ if noWater == true:
 		GPIO.output(18, GPIO.LOW)
 	elif currentforecast == 'Rain':
 		print ('No water required')
-		GPIO.output(23, GPIO.HIGH)
+		GPIO.output(24, GPIO.HIGH)
+		time.sleep(60)
 		#exit program
-		print ('Rain on the way')
+		print ('Rain forecasted')
+		time.sleep(60)
+		GPIO.output(24, GPIO.LOW)
 		exit()
 else:
-	if water == true:
+	if water == True:
 		#exit program if moisture is detected
+                print ('No water required , Rain Forecasted')
+		GPIO.output(24, GPIO.HIGH)
+		time.sleep(60)
+		#exit program
+		time.sleep(60)
+		GPIO.output(24, GPIO.LOW)
 		exit()
+
 """
 print ('rain')
 	GPIO.output(23, GPIO.HIGH)
@@ -116,3 +127,4 @@ if currentforecast == 'Snow':
 	print ("LED OFF")
 	GPIO.output(25, GPIO.LOW)
 """
+
