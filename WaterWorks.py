@@ -78,7 +78,7 @@ checkMoisture(moistSensor)
 # This will output to the LEDS for testing - this will change once the moisture sensor and relay are in place
 # which then output to the solenoid for water release.
 # we will need to add in a timer which will close the solenoid when the timer expires.
-if water == True:
+if water == False:
 	if currentforecast == 'Clear':
 		print ('Start Water Flow')
 		#tested with an LED
@@ -92,7 +92,6 @@ if water == True:
 		time.sleep(60)
 		#exit program
 		print ('Rain forecasted')
-		time.sleep(60)
 		GPIO.output(24, GPIO.LOW)
 		exit()
 
