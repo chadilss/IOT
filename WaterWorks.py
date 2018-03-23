@@ -71,7 +71,7 @@ print ("Daily High: ")
 print (round(temp))
 
 #RAINFALL?
-currentforecast = 'Clear'#w['list'][0]['weather'][0]['main']
+currentforecast = w['list'][0]['weather'][0]['main']
 print ("The weather is: ")
 print (currentforecast)
 
