@@ -31,7 +31,8 @@ def checkMoisture(moistSensor):
 		
 
 GPIO.add_event_detect(moiseSensor, GPIO.BOTH, bouncetime=300)
-GPIO.add_event_callback(moistSensor, checkMoisture)		
+GPIO.add_event_checkMoisture(moistSensor, checkMoisture)
+
 		
 def receiveTemp():
     "get temperature from weather api"
