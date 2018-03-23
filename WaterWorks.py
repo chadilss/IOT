@@ -27,13 +27,11 @@ GPIO.setup(moistSensor, GPIO.IN)
 
 def checkMoisture(moistSensor):
 	if GPIO.input(moistSensor):
+                print('No water detected')
 		noWater = True;
 	else:
+                print('Water Detected')
 		water = True;
-		
-
-GPIO.add_event_detect(moistSensor, GPIO.BOTH, bouncetime=300)
-GPIO.add_event_callback(moistSensor, checkMoisture)		
 		
 def receiveTemp():
     "get temperature from weather api"
@@ -77,6 +75,8 @@ currentforecast = w['list'][0]['weather'][0]['main']
 print ("The weather is: ")
 print (currentforecast)
 
+checkMoisture(moistSensor)
+
 # This will output to the LEDS for testing - this will change once the moisture sensor and relay are in place
 # which then output to the solenoid for water release.
 # we will need to add in a timer which will close the solenoid when the timer expires.
@@ -104,7 +104,6 @@ else:
 		GPIO.output(24, GPIO.HIGH)
 		time.sleep(60)
 		#exit program
-		time.sleep(60)
 		GPIO.output(24, GPIO.LOW)
 		exit()
 
