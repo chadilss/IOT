@@ -96,14 +96,6 @@ if currentforecast == 'Rain' and moisture == False:
 	#exit program
 	GPIO.output(18, GPIO.LOW)
 	exit()
-
-if currentForecast == 'Clear' and water == True:
-        print ('No water required, sufficient moisture detected')
-        GPIO.output(18, GPIO.HIGH)
-        time.sleep(30)
-        #exit program
-        GPIO.output(18, GPIO.LOW)
-        exit()
                 
 
 """
