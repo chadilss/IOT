@@ -8,6 +8,13 @@ import urllib2
 import json
 import time
 
+# Libraries for email notification
+import smtplib
+from email.MIMEMultipart import MIMEMultipart
+from email.MIMEText import MIMEText
+from email.MIMEBase import MIMEBase
+from email import encoders
+
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
@@ -24,6 +31,46 @@ GPIO.setup(25, GPIO.OUT)
 # INPUT
 GPIO.setup(moistSensor, GPIO.IN)
 
+def sendEmail(msg):
+	username = "waterworksnotification@gmail.com"
+	password = "Finjam85!!"
+	mailto "chadfinch85@gmail.com"
+	
+	msg['From'] = username
+	msg['To'] = mailto
+	
+	server = smtplib.SMTP('smtp.gmail.com:587')
+	server.ehlo_or_helo_if_needed()
+	server.login(username, password)
+	server.sendmail(username, mailto, msg.as_string())
+	server.quit()
+	
+	print "Email sent to: "+ mailto
+	return
+
+def water_started_email():
+	print "Water Flow started"
+	msg = MIMEMultipart()
+	msg.attach(MIMEText('System Activated, Running for 1 Min. Water on'))
+	msg['Subject'] = 'Watering System Notification'
+	send_email(msg)
+	return
+
+def water_stopped_email():
+	print "Water Flow Stopped"
+	msg = MIMEMultipart()
+	msg.attach(MIMEText('System Cycle Completed, water off'))
+	msg['Subject'] = 'Watering System Notification'
+	send_email(msg)
+	return
+
+def water_not_required_email():
+	print "Water Not required"
+	msg = MIMEMultipart()
+	msg.attach(MIMEText('No water required today, rain or sufficient moisture detected'))
+	msg['Subject'] = 'Watering System Notification'
+	send_email(msg)
+	return
 
 def checkMoisture(moistSensor):
 	if GPIO.input(moistSensor):
@@ -81,16 +128,19 @@ moisture = checkMoisture(moistSensor)
 # which then output to the solenoid for water release.
 if currentforecast == 'Clear' and moisture == False:
 		print ('Start Water Flow')
+		water_started_email()
 		#tested with an LED
 		GPIO.output(24, GPIO.HIGH)
 		#Keep out on for 60 seconds
 		time.sleep(60)
 		print ("Stop Water Flow")
 		GPIO.output(24, GPIO.LOW)
+		water_stopped_email()
 
 if currentforecast == 'Rain' and moisture == False:
         print ('No water required')
         print ('Rain forecasted for today')
+	water_not_required_email()
 	GPIO.output(18, GPIO.HIGH)
 	time.sleep(30)
 	#exit program
