@@ -53,7 +53,7 @@ def water_started_email():
 	msg = MIMEMultipart()
 	msg.attach(MIMEText('System Activated, Running for 1 Min. Water on'))
 	msg['Subject'] = 'Watering System Notification'
-	send_email(msg)
+	sendEmail(msg)
 	return
 
 def water_stopped_email():
@@ -61,7 +61,7 @@ def water_stopped_email():
 	msg = MIMEMultipart()
 	msg.attach(MIMEText('System Cycle Completed, water off'))
 	msg['Subject'] = 'Watering System Notification'
-	send_email(msg)
+	sendEmail(msg)
 	return
 
 def water_not_required_email():
@@ -69,7 +69,7 @@ def water_not_required_email():
 	msg = MIMEMultipart()
 	msg.attach(MIMEText('No water required today, rain or sufficient moisture detected'))
 	msg['Subject'] = 'Watering System Notification'
-	send_email(msg)
+	sendEmail(msg)
 	return
 
 def checkMoisture(moistSensor):
