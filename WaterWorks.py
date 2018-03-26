@@ -34,7 +34,7 @@ GPIO.setup(moistSensor, GPIO.IN)
 def sendEmail(msg):
 	username = "waterworksnotification@gmail.com"
 	password = "Finjam85!!"
-	mailto "chadfinch85@gmail.com"
+	mailto = "chadfinch85@gmail.com"
 	
 	msg['From'] = username
 	msg['To'] = mailto
