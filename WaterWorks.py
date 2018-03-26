@@ -34,11 +34,13 @@ GPIO.setup(moistSensor, GPIO.IN)
 def sendEmail(msg):
 	username = "waterworksnotification@gmail.com"
 	password = "waterworks2018"
-	mailto = "chadfinch85@gmail.com"
+	# Group 18 members
+	mailto = "chadfinch85@gmail.com, l.attitude37@gmail.com, glennR@trstyreandwheel.co.nz"
 	
 	msg['From'] = username
 	msg['To'] = mailto
 	
+	# Email comes from waterworksnotification@gmail.com
 	server = smtplib.SMTP('smtp.gmail.com:587')
 	server.ehlo()
 	server.starttls()
