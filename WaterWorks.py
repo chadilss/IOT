@@ -89,6 +89,7 @@ def checkMoisture(moistSensor):
                 water = False
 	else:
                 print('Water Detected')
+		water = True
         return water
 		
 def receiveTemp():
