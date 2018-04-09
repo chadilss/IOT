@@ -33,7 +33,7 @@ GPIO.setup(25, GPIO.OUT)
 
 #Check Network Connection
 hostname = "openweathermap.org"
-response = subprocess.call("ping -c 1 " + hostname + " > /Home/pi/IOT/output.txt 2>&1")
+response = subprocess.call(["ping", hostname, "-c1", "-W2", "-q"])
 
 #Check Response
 if response == 0:
