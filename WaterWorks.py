@@ -32,7 +32,7 @@ GPIO.setup(24, GPIO.OUT)
 GPIO.setup(25, GPIO.OUT)
 
 #Get Todays date and time - used for log file.
-today = datetime.date.today()
+today = datetime.datetime.now()
 
 #Check Network Connections - Network Performance Metrics
 #First Checks if API is up or down
