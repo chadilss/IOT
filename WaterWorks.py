@@ -43,7 +43,7 @@ response = subprocess.call(["ping", api, "-c1", "-W2", "-q"])
 if response == 0:
 	print api, 'is up'
 	f = open('/home/pi/IOT/output.txt', 'w')
-	f.write('%s' + ' \n' + api + ' is up \n' % today)
+	f.write('%s' + ' \n' + '%s' + ' is up \n' % today % api)
 	f.close()
 else:
 	print api, 'is down'
