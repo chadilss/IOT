@@ -7,6 +7,8 @@ import RPi.GPIO as GPIO
 import urllib2
 import json
 import time
+import os
+
 
 # Libraries for email notification
 import smtplib
@@ -27,6 +29,16 @@ GPIO.setup(18, GPIO.OUT)
 GPIO.setup(23, GPIO.OUT)
 GPIO.setup(24, GPIO.OUT)
 GPIO.setup(25, GPIO.OUT)
+
+#Check Network Connection
+hostname = "http://openweathermap.org"
+response = os.system("ping -n 1 " + hostname)
+
+#Check Response
+if response == 0:
+	print(hostname, 'is up')
+	else
+	print(hostname, 'is down')
 
 # INPUT
 GPIO.setup(moistSensor, GPIO.IN)
