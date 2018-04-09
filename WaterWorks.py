@@ -124,14 +124,6 @@ def water_not_required_email():
 	sendEmail(msg)
 	return
 
-def api_offline_email():
-	print "API Error"
-	msg = MIMEMultipart()
-	msg.attach(MIMEText('WaterWorks irrigation is unable to contact the weather API'))
-	msg['Subject'] = 'Watering System Notification'
-	sendEmail(msg)
-	return
-
 def checkMoisture(moistSensor):
 	if GPIO.input(moistSensor):
                 print('No water detected')
@@ -151,7 +143,7 @@ try:
 	currentWeather = receiveTemp()
 	w = json.loads(currentWeather)
 except:
-	api_offline_email()
+	weather_api_offline()
 	sys.exit()
 
 # Current Temp
