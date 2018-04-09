@@ -32,7 +32,7 @@ GPIO.setup(24, GPIO.OUT)
 GPIO.setup(25, GPIO.OUT)
 
 #Check Network Connection
-hostname = "www.openweathermap.org"
+hostname = "openweathermap.org"
 response = os.system("ping -c 1 " + hostname + " > /Home/pi/IOT 2>&1")
 
 #Check Response
