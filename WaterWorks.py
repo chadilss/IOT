@@ -37,7 +37,7 @@ response = os.system("ping -n 1 " + hostname)
 #Check Response
 if response == 0:
 	print(hostname, 'is up')
-	else
+else:
 	print(hostname, 'is down')
 
 # INPUT
