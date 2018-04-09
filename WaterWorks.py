@@ -9,6 +9,7 @@ import json
 import time
 import subprocess
 import datetime
+import sys
 
 
 # Libraries for email notification
@@ -49,13 +50,15 @@ else:
 	with open('/home/pi/IOT/output.txt', 'a') as the_file:
 		the_file.write('%s\n%s is down\n\n' % (today,api))
 	#Send email notifying user that API is offline and cant check weather
-	weather_api_offline() 
+	weather_api_offline()
+	print ('Unable to execute weather api query - exiting program')
+	sys.exit()
 
 #Second, checks gateway, Prints to console and writes to log file.
 gateway = "192.168.1.254"
 response = subprocess.call(["ping", gateway, "-c1", "-W2", "-q"])
 
-#Check Response
+#Check Response, Prints to console and writes to log file
 if response == 0:
 	print gateway, 'is up'
 	with open('/home/pi/IOT/output.txt', 'a') as the_file:
@@ -149,7 +152,7 @@ try:
 	w = json.loads(currentWeather)
 except:
 	api_offline_email()
-	exit()
+	sys.exit()
 
 # Current Temp
 temp = float(w['list'][0]['main']['temp'])
@@ -207,7 +210,7 @@ if currentforecast == 'Rain' and moisture == False:
 	time.sleep(30)
 	#exit program
 	GPIO.output(18, GPIO.LOW)
-	exit()
+	sys.exit()
                 
 
 """
