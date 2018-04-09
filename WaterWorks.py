@@ -42,14 +42,12 @@ response = subprocess.call(["ping", api, "-c1", "-W2", "-q"])
 #Check Response, Prints to console and writes to log file
 if response == 0:
 	print api, 'is up'
-	f = open('/home/pi/IOT/output.txt', 'w')
-	f.write('%s' + ' \n' + '%s' + ' is up \n' % today % api)
-	f.close()
+	with open('/home/pi/IOT/output.txt', 'a') as the file:
+		the_file.write('%s\n%s is up\n\n' % (today,api))
 else:
 	print api, 'is down'
-	f = open('/home/pi/IOT/output.txt', 'w')
-	f.write('%s' + ' \n' + api + ' is down \n' % today)
-	f.close()
+	with open('/home/pi/IOT/output.txt', 'a') as the file:
+		the_file.write('%s\n%s is down\n\n' % (today,api))
 	#Send email notifying user that API is offline and cant check weather
 	weather_api_offline() 
 
@@ -60,14 +58,12 @@ response = subprocess.call(["ping", gateway, "-c1", "-W2", "-q"])
 #Check Response
 if response == 0:
 	print gateway, 'is up'
-	f = open('/home/pi/IOT/output.txt', 'w')
-	f.write('%s' + ' \n' + gateway + ' is up \n' % today)
-	f.close()
+	with open('/home/pi/IOT/output.txt', 'a') as the file:
+		the_file.write('%s\n%s is up\n\n' % (today,gateway))
 else:
 	print gateway, 'is down'
-	f = open('/home/pi/IOT/output.txt', 'w')
-	f.write('%s' + ' \n' + gateway + ' is down \n' % today)
-	f.close()
+	with open('/home/pi/IOT/output.txt', 'a') as the file:
+		the_file.write('%s\n%s is down\n\n' % (today,gateway))
 	
 
 # INPUT
