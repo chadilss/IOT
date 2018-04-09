@@ -32,7 +32,7 @@ GPIO.setup(24, GPIO.OUT)
 GPIO.setup(25, GPIO.OUT)
 
 #Get Todays date and time - used for log file.
-today = datetime.date.today()
+today = datetime.date.now()
 
 #Check Network Connections - Network Performance Metrics
 #First Checks if API is up or down
@@ -43,12 +43,12 @@ response = subprocess.call(["ping", api, "-c1", "-W2", "-q"])
 if response == 0:
 	print api, 'is up'
 	f = open('/home/pi/IOT/output.txt', 'w')
-	f.write(today + ' \n' + api + ' is up \n')
+	f.write('%s' + ' \n' + api + ' is up \n' % today)
 	f.close()
 else:
 	print api, 'is down'
 	f = open('/home/pi/IOT/output.txt', 'w')
-	f.write(today + ' \n' + api + ' is down \n')
+	f.write('%s' + ' \n' + api + ' is down \n' % today)
 	f.close()
 	#Send email notifying user that API is offline and cant check weather
 	weather_api_offline() 
@@ -61,12 +61,12 @@ response = subprocess.call(["ping", gateway, "-c1", "-W2", "-q"])
 if response == 0:
 	print gateway, 'is up'
 	f = open('/home/pi/IOT/output.txt', 'w')
-	f.write(today + ' \n' + gateway + ' is up \n')
+	f.write('%s' + ' \n' + gateway + ' is up \n' % today)
 	f.close()
 else:
 	print gateway, 'is down'
 	f = open('/home/pi/IOT/output.txt', 'w')
-	f.write(today + ' \n' + gateway + ' is down \n')
+	f.write('%s' + ' \n' + gateway + ' is down \n' % today)
 	f.close()
 	
 
