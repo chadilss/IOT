@@ -7,8 +7,8 @@ import RPi.GPIO as GPIO
 import urllib2
 import json
 import time
-import os
 import subprocess
+import datetime
 
 
 # Libraries for email notification
@@ -31,15 +31,44 @@ GPIO.setup(23, GPIO.OUT)
 GPIO.setup(24, GPIO.OUT)
 GPIO.setup(25, GPIO.OUT)
 
-#Check Network Connection
-hostname = "openweathermap.org"
-response = subprocess.call(["ping", hostname, "-c1", "-W2", "-q"])
+#Get Todays date and time - used for log file.
+today = datetime.date.today()
+
+#Check Network Connections - Network Performance Metrics
+#First Checks if API is up or down
+api = "openweathermap.org"
+response = subprocess.call(["ping", api, "-c1", "-W2", "-q"])
+
+#Check Response, Prints to console and writes to log file
+if response == 0:
+	print api, 'is up'
+	f = open('/home/pi/IOT/output.txt', 'w')
+	f.write(today + ' \n' + api + ' is up \n')
+	f.close()
+else:
+	print api, 'is down'
+	f = open('/home/pi/IOT/output.txt', 'w')
+	f.write(today + ' \n' + api + ' is down \n')
+	f.close()
+	#Send email notifying user that API is offline and cant check weather
+	weather_api_offline() 
+
+#Second, checks gateway, Prints to console and writes to log file.
+gateway = "192.168.1.254"
+response = subprocess.call(["ping", gateway, "-c1", "-W2", "-q"])
 
 #Check Response
 if response == 0:
-	print hostname, 'is up'
+	print gateway, 'is up'
+	f = open('/home/pi/IOT/output.txt', 'w')
+	f.write(today + ' \n' + gateway + ' is up \n')
+	f.close()
 else:
-	print hostname, 'is down'
+	print gateway, 'is down'
+	f = open('/home/pi/IOT/output.txt', 'w')
+	f.write(today + ' \n' + gateway + ' is down \n')
+	f.close()
+	
 
 # INPUT
 GPIO.setup(moistSensor, GPIO.IN)
@@ -62,6 +91,14 @@ def sendEmail(msg):
 	server.quit()
 	
 	print "Email sent to: "+ mailto
+	return
+
+def weather_api_offline():
+	print "Unable to query weather API"
+	msg = MIMEMultipart()
+	msg.attach(MIMEText('System weather query failed, please contact openweathermap support team'))
+	msg['Subject'] = 'Watering System Notification - Failed api query'
+	sendEmail(msg)
 	return
 
 def water_started_email():
