@@ -31,7 +31,7 @@ GPIO.setup(24, GPIO.OUT)
 GPIO.setup(25, GPIO.OUT)
 
 #Check Network Connection
-hostname = "http://openweathermap.org"
+hostname = "openweathermap.org"
 response = os.system("ping -n 1 " + hostname)
 
 #Check Response
