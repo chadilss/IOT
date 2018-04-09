@@ -35,7 +35,7 @@ def sendEmail(msg):
 	username = "waterworksnotification@gmail.com"
 	password = "waterworks2018"
 	# Group 18 members
-	mailto = "chadfinch85@gmail.com, l.attitude37@gmail.com, glennR@trstyreandwheel.co.nz"
+	mailto = "chadfinch85@gmail.com"
 	
 	msg['From'] = username
 	msg['To'] = mailto
