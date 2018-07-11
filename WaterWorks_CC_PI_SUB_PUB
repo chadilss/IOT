@@ -1,0 +1,127 @@
+# Import package
+import paho.mqtt.client as mqtt
+import RPi.GPIO as GPIO
+import ssl, time, sys, json
+import os
+import socket
+
+MQTT_HOST = "hidden"
+# Root Certificate File Path
+CA_ROOT_CERT_FILE = "root-CA.crt"
+# Thing Name
+THING_NAME = "MyPI"
+# Thing Certificate 
+THING_CERT_FILE = "hidden"
+# Private Key
+THING_PRIVATE_KEY_FILE = "hidden"
+
+
+POWER_PIN = 24
+MQTT_PORT = 8883
+MQTT_KEEPALIVE_INTERVAL = 45
+SHADOW_UPDATE_TOPIC = "$aws/things/" + THING_NAME + "/shadow/update"
+SHADOW_UPDATE_ACCEPTED_TOPIC = "$aws/things/" + THING_NAME + "/shadow/update/accepted"
+SHADOW_UPDATE_REJECTED_TOPIC = "$aws/things/" + THING_NAME + "/shadow/update/rejected"
+SHADOW_UPDATE_DELTA_TOPIC = "$aws/things/" + THING_NAME + "/shadow/update/delta"
+SHADOW_GET_TOPIC = "$aws/things/" + THING_NAME + "/shadow/get"
+SHADOW_GET_ACCEPTED_TOPIC = "$aws/things/" + THING_NAME + "/shadow/get/accepted"
+SHADOW_GET_REJECTED_TOPIC = "$aws/things/" + THING_NAME + "/shadow/get/rejected"
+SHADOW_STATE_DOC_SPRINKLER_ON = """{"state" : {"reported" : {"SPRINKLER" : "ON"}}}"""
+SHADOW_STATE_DOC_SPRINKLER_OFF = """{"state" : {"reported" : {"SPRINKLER" : "OFF"}}}"""
+# =======================================================
+
+
+#GPIO
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+GPIO.setup(POWER_PIN, GPIO.OUT)
+
+# MQTT Client
+mqttc = mqtt.Client("client2")
+
+# SPRINKLER Function
+def SPRINKLER_Status_Change(Shadow_State_Doc, Type):
+	DESIRED_SPRINKLER_STATUS = ""
+	print("\nParsing Shadow Json...")
+	SHADOW_State_Doc = json.loads(Shadow_State_Doc)
+	if Type == "DELTA":
+		DESIRED_SPRINKLER_STATUS = SHADOW_State_Doc['state']['SPRINKLER']
+	elif Type == "GET_REQ":
+		DESIRED_SPRINKLER_STATUS = SHADOW_State_Doc['state']['desired']['SPRINKLER']
+	print("Desired SPRINKLER Status: " + DESIRED_SPRINKLER_STATUS)
+
+
+
+	if DESIRED_SPRINKLER_STATUS == "ON":
+		# BEGIN WATER FLOW
+		print("\nWATER FLOW STARTED...")
+		GPIO.output(POWER_PIN, GPIO.HIGH)
+		print("SPRINKLER ACTIVE. Reporting SPRINKLER Status...")
+		mqttc.publish(SHADOW_UPDATE_TOPIC,SHADOW_STATE_DOC_SPRINKLER_ON,qos=1)
+	elif DESIRED_SPRINKLER_STATUS == "OFF":
+		print("\nTURNING SPRINKLER OFF...")
+		GPIO.output(POWER_PIN, GPIO.LOW)
+		print("SPRINKLER is now OFF. Reporting SPRINKLER Status...")
+		mqttc.publish(SHADOW_UPDATE_TOPIC,SHADOW_STATE_DOC_SPRINKLER_OFF,qos=1)
+	else:
+		print("---ERROR--- Invalid STATUS.")
+
+
+
+
+def on_connect(self, mosq, obj, rc):	# mosq, obj, rc client, userdata, flags, rc
+	print("Connection returned result: " + str(rc) )
+	mqttc.subscribe(SHADOW_UPDATE_DELTA_TOPIC, 1)
+	mqttc.subscribe(SHADOW_UPDATE_ACCEPTED_TOPIC, 1)
+	mqttc.subscribe(SHADOW_UPDATE_REJECTED_TOPIC, 1)
+	mqttc.subscribe(SHADOW_GET_ACCEPTED_TOPIC, 1)
+	mqttc.subscribe(SHADOW_GET_REJECTED_TOPIC, 1)
+
+
+
+def on_message(mosq, obj, msg):	#mosq, obj, msg
+	if str(msg.topic) == SHADOW_UPDATE_DELTA_TOPIC:
+		print ("\nNew Delta Message Received...")
+		SHADOW_STATE_DELTA = str(msg.payload)
+		print(SHADOW_STATE_DELTA)
+		SPRINKLER_Status_Change(SHADOW_STATE_DELTA, "DELTA")
+	elif str(msg.topic) == SHADOW_GET_ACCEPTED_TOPIC:
+		print("\nReceived State Doc with Get Request...")
+		SHADOW_STATE_DOC = str(msg.payload)
+		print(SHADOW_STATE_DOC)
+		SPRINKLER_Status_Change(SHADOW_STATE_DOC, "GET_REQ")
+	elif str(msg.topic) == SHADOW_GET_REJECTED_TOPIC:
+		SHADOW_GET_ERROR = str(msg.payload)
+		print("\n---ERROR--- Unable to fetch Shadow Doc...\nError Response: " + SHADOW_GET_ERROR)
+	elif str(msg.topic) == SHADOW_UPDATE_ACCEPTED_TOPIC:
+		print("\nSPRINKLER Status Change Updated SUCCESSFULLY...")
+		print("Response JSON: " + str(msg.payload))
+	elif str(msg.topic) == SHADOW_UPDATE_REJECTED_TOPIC:
+		SHADOW_UPDATE_ERROR = str(msg.payload)
+		print("\n---ERROR--- Failed to Update \nError Response: " + SHADOW_UPDATE_ERROR)
+	else:
+		print("AWS Response Topic: " + str(msg.topic))
+		print("QoS: " + str(msg.qos))
+		print("Payload: " + str(msg.payload))
+
+
+def on_subscribe(mosq, obj, mid, granted_qos):
+	if mid == 3:
+		mqttc.publish(SHADOW_GET_TOPIC,"",qos=1)
+
+def on_disconnect(client, userdata, rc):
+    if rc != 0:
+        print ("Disconnected. reconnecting...")
+        GPIO.cleanup()
+
+
+mqttc.on_message = on_message
+mqttc.on_connect = on_connect
+mqttc.on_subscribe = on_subscribe
+mqttc.on_disconnect = on_disconnect
+
+mqttc.tls_set(CA_ROOT_CERT_FILE, certfile=THING_CERT_FILE, keyfile=THING_PRIVATE_KEY_FILE, cert_reqs=ssl.CERT_REQUIRED, tls_version=ssl.PROTOCOL_TLSv1_2, ciphers=None)
+
+mqttc.connect(MQTT_HOST, MQTT_PORT, MQTT_KEEPALIVE_INTERVAL)
+
+mqttc.loop_forever()
